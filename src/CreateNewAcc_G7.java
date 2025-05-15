@@ -8,6 +8,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 public class CreateNewAcc_G7 {
 	public CreateNewAcc_G7() {
@@ -31,6 +38,7 @@ public class CreateNewAcc_G7 {
 
 		JLabel CreateNewAcc_Logo = new JLabel("ByteXChange");
 		JLabel CreateNewAcc_Header = new JLabel("Create New Account");
+		
 
 		JLabel CNA_UserLabel = new JLabel("Username");
 		JLabel CNA_PassLabel = new JLabel("Password");
@@ -109,6 +117,48 @@ public class CreateNewAcc_G7 {
 
 		//REMOVE BORDER BUTTON
 		CNA_CreateNewAccButton.setBorderPainted(false);
+		
+		
+		CNA_CreateNewAccButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String username = CNA_UserField.getText();
+				String password = CNA_PassField.getText();
+				String confirmPassword = CNA_ConPassField.getText();
+
+				if (!password.equals(confirmPassword)) {
+					JOptionPane.showMessageDialog(CreateNewAcc_Frame, "Passwords do not match.");
+					return;
+				}
+
+				try {
+					// Connect to MySQL
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login_db", "root", "");
+
+					// Insert the user into the users table
+					String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+					PreparedStatement stmt = conn.prepareStatement(sql);
+					stmt.setString(1, username);
+					stmt.setString(2, PasswordUtil.hashPassword(password));
+
+					int rowsInserted = stmt.executeUpdate();
+
+					if (rowsInserted > 0) {
+						JOptionPane.showMessageDialog(CreateNewAcc_Frame, "Account created successfully!");
+						CreateNewAcc_Frame.dispose();
+						new LoginPage_G7(); // Go back to login
+					}
+
+					conn.close();
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(CreateNewAcc_Frame, "Error: " + ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		});
+
+		
+	
 
 	}
 	public static void main(String[] args) {

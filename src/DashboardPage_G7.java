@@ -34,7 +34,7 @@ import org.json.JSONObject;
 
 
 public class DashboardPage_G7{
-	private JPanel loadingPanel;
+	
     private JTextField Panel1_AmountField, Panel1_FinalAmountField;
     private JComboBox<String> fromCurrency, toCurrency;
 	private JPanel Dashboard_Panel2;
@@ -73,6 +73,7 @@ public class DashboardPage_G7{
 
 		//LABEL
 		JLabel Dashboard_Logo = new JLabel("ByteXChange");
+		
 		JLabel Dashboard_Header = new JLabel("Dashboard");
 
 		JLabel Panel1_To = new JLabel("To");
@@ -99,7 +100,8 @@ public class DashboardPage_G7{
 
 		//ADD
 		Dashboard_Frame.setLayout(null);
-
+		
+		
 		Dashboard_Frame.add(Dashboard_Logo);
 		Dashboard_Frame.add(Dashboard_ExitButton);
 		Dashboard_Frame.add(Dashboard_Header);
@@ -135,6 +137,7 @@ public class DashboardPage_G7{
 		//SET BOUNDS
 		Dashboard_Logo.setBounds(55, 35, 150, 40);
 		Dashboard_ExitButton.setBounds(727, 23, 32, 32);
+		
 
 		Dashboard_Header.setBounds(300, 90, 200, 50);
 
@@ -181,6 +184,7 @@ public class DashboardPage_G7{
 		//FONT CUSTOMIZATION
 		Dashboard_Logo.setFont(new Font("Lato", Font.BOLD, 20));
 		Dashboard_Logo.setForeground(new Color(0xDFF6FF));
+		
 
 		Dashboard_Header.setFont(new Font("Lato", Font.BOLD, 36));
 		Dashboard_Header.setForeground(new Color(0xDFF6FF));
@@ -348,7 +352,7 @@ public class DashboardPage_G7{
     new Thread(() -> {
         try {
             
-            URL url = new URL("https://api.exchangerate-api.com/v4/latest/USD");
+            URL url = new URL("https://api.exchangerate-api.com/v4/latest/USD"); 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 

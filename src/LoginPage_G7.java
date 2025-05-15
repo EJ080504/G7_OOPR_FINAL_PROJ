@@ -10,6 +10,12 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+
 
 
 public class LoginPage_G7 {
@@ -130,6 +136,46 @@ public class LoginPage_G7 {
 				new CreateNewAcc_G7();
 			}
 		});
+		
+		LoginButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String username = User_TextField.getText();
+				String password = Pass_TextField.getText();
+
+				try {
+					// Database connection
+					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/login_db", "root", "");
+
+					// SQL query to check if the username and password exist
+					String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+					PreparedStatement stmt = conn.prepareStatement(sql);
+					stmt.setString(1, username);
+					stmt.setString(2, PasswordUtil.hashPassword(password));
+
+					ResultSet rs = stmt.executeQuery();
+
+					if (rs.next()) {
+					    // Save current user ID to session
+					    Session.currentUserId = rs.getInt("id");
+
+					    JOptionPane.showMessageDialog(LoginFrame, "Login successful!");
+					    LoginFrame.dispose();
+					    new DashboardPage_G7(); // Open dashboard
+					} else {
+						JOptionPane.showMessageDialog(LoginFrame, "Invalid username or password.");
+					}
+
+					conn.close();
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(LoginFrame, "Error: " + ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		});
+
+		
+		
 
 	}
 	public static void main(String[] args) {

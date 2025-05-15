@@ -6,7 +6,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.FileWriter;
+import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -55,37 +58,43 @@ public class TransactionHistoryPage_G7 extends JFrame {
 		JButton TranHistory_Logo = new JButton("ByteXChange");
 		JButton TranHistory_ExitButton = new JButton(TransactionHistory_Exit);
 		JButton TranHistory_ExportButton = new JButton("Export Transaction");
+		JButton Transaction_ClearAllButton = new JButton("Clear all");
 
 		//ADD
 		TranHistory_Frame.setLayout(null);
 
 		TranHistory_Frame.add(TranHistory_Logo);
-		TranHistory_Frame.add(TranHistory_ExitButton);
+	
 		TranHistory_Frame.add(TranHistory_Header);
 		TranHistory_Frame.add(TranHistory_Horizontal);
 		TranHistory_Frame.add(TranHistory_ExportButton);
 		TranHistory_Frame.add(TranHistory_BoardPanel);
-
+		
+		TranHistory_BoardPanel.add(Transaction_ClearAllButton);
+		
 		//SET BOUNDS
 		TranHistory_Logo.setBounds(55, 35, 180, 25);
-		TranHistory_ExitButton.setBounds(727, 23, 32, 32);
 
 		TranHistory_Header.setBounds(242, 90, 350, 40);
 		TranHistory_Horizontal.setBounds(55, 154, 670, 1);
 
 		TranHistory_ExportButton.setBounds(550, 162, 170, 30);
 		TranHistory_BoardPanel.setBounds(60, 200, 662, 339);
+		
+		Transaction_ClearAllButton.setBounds(540, 300, 110, 30);
 
 		//BG COLOR
 		TranHistory_Logo.setBackground(new Color(0x06283D));
 
 		TranHistory_Frame.getContentPane().setBackground(new Color(0x06283D));
-		TranHistory_ExitButton.setBackground(new Color(0x06283D));
+		
 
 		TranHistory_Horizontal.setBackground(new Color(0xDFF6FF));
 		TranHistory_ExportButton.setBackground(new Color(0x1363DF));
 
 		TranHistory_BoardPanel.setBackground(new Color(0x1363DF));
+		
+		Transaction_ClearAllButton.setBackground(new Color(0x47B5FF));
 
 		//FONT CUSTOMIZATION
 		TranHistory_Logo.setFont(new Font("Lato", Font.BOLD, 20));
@@ -97,12 +106,19 @@ public class TransactionHistoryPage_G7 extends JFrame {
 		TranHistory_ExportButton.setFont(new Font("Lato", Font.BOLD, 13));
 		TranHistory_ExportButton.setForeground(new Color(0xDFF6FF));
 		
+		Transaction_ClearAllButton.setFont(new Font ("Lato", Font.BOLD, 14));
+		Transaction_ClearAllButton.setForeground(new Color(0xDFF6FF));
+		
+		
 		//REMOVE BORDER
 		TranHistory_Logo.setBorderPainted(false);
+		Transaction_ClearAllButton.setBorderPainted(false);
 		
 		// Add to the board panel
 		TranHistory_BoardPanel.setLayout(null);
 		TranHistory_BoardPanel.add(scrollPane);
+		
+		
 
 		// Load saved transactions from TransactionHistory class
 		StringBuilder logBuilder = new StringBuilder();
@@ -124,6 +140,18 @@ public class TransactionHistoryPage_G7 extends JFrame {
             	TranHistory_Logo.setCursor(Cursor.getDefaultCursor());
             }
         });
+		
+		Transaction_ClearAllButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				Transaction_ClearAllButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				TranHistory_Logo.setCursor(Cursor.getDefaultCursor());
+			}
+		});
 
 
 		//CLICK THE LOGO AND BACK TO DASHBOARD
@@ -133,6 +161,45 @@ public class TransactionHistoryPage_G7 extends JFrame {
 				TranHistory_Frame.dispose();
 				new DashboardPage_G7();
 			}
+		});
+		
+		
+		Transaction_ClearAllButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				logs.clear(); // clear the list
+				transactionTextArea.setText(""); // clear the display
+				JOptionPane.showMessageDialog(null, "All transactions cleared.");
+			}
+		});
+		
+		TranHistory_ExportButton.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        JFileChooser fileChooser = new JFileChooser();
+		        fileChooser.setDialogTitle("Save Transactions");
+
+		        int userSelection = fileChooser.showSaveDialog(null);
+		        if (userSelection == JFileChooser.APPROVE_OPTION) {
+		            try {
+		                java.io.File fileToSave = fileChooser.getSelectedFile();
+		                // Ensure the file ends with .txt
+		                if (!fileToSave.getName().toLowerCase().endsWith(".txt")) {
+		                    fileToSave = new java.io.File(fileToSave.getAbsolutePath() + ".txt");
+		                }
+
+		                FileWriter writer = new FileWriter(fileToSave);
+		                for (String log : logs) {
+		                    writer.write(log + "\n");
+		                }
+		                writer.close();
+
+		                JOptionPane.showMessageDialog(null, "Transactions exported successfully!");
+		            } catch (Exception ex) {
+		                JOptionPane.showMessageDialog(null, "Error exporting transactions: " + ex.getMessage());
+		            }
+		        }
+		    }
 		});
 
 	}
@@ -146,6 +213,8 @@ public class TransactionHistoryPage_G7 extends JFrame {
 	    public static List<String> getLogs() {
 	        return logs;
 	    }
+	    
+
 	
 
 	
